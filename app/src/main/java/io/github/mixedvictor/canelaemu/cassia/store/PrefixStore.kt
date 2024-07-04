@@ -146,9 +146,10 @@ class PrefixStore(val path: Path) {
             Files.createDirectory(prefixPath.resolve(PREFIX_SUBDIR))
             Files.createDirectory(prefixPath.resolve(HOME_SUBDIR))
 
-            val prefix = linkPrefixRuntimeLocked(Prefix(uuid, name, runtimeId))
-//            val prefix = Prefix(uuid, name, runtimeId)
-            writePrefixLocked(prefix)
+//            val prefix = linkPrefixRuntimeLocked(Prefix(uuid, name, runtimeId))
+            val prefix = Prefix(uuid, name, runtimeId)
+            Log.w(TAG, "Creating prefix with name ${prefix.name} and UUID of (${prefix.uuid})")
+//            writePrefixLocked(prefix)
             prefixes.add(prefix)
             prefix
         }

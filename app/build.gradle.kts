@@ -21,8 +21,6 @@ android {
         }
     }
 
-    ndkVersion = "26.1.10909125"
-
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -60,7 +58,6 @@ android {
             version = "3.22.1"
         }
     }
-    buildToolsVersion = "34.0.0"
 }
 
 dependencies {
