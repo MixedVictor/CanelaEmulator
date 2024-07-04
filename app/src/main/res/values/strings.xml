@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">Canela Emulator</string>
+
+    <string name="setup_header">Install externals and runtime</string>
+
+    <string name="externals_title">Externals (required)</string>
+    <string name="runtime">Runtime</string>
+
+    <string name="file_selection">Waiting for file selection…</string>
+
+    <string name="file_selection_extracting">Extracting file contents…</string>
+
+    <string name="file_selection_ok">File successfully extracted</string>
+    <string name="file_selection_error">Error</string>
+
+    <string name="file_already_installed">Already installed</string>
+
+    <string name="select_externals">Select externals file…</string>
+
+    <string name="select">Select</string>
+    <string name="remove_selection">Remove</string>
+
+    <string name="finish_setup">Finish</string>
+
+    <string name="prefixes">Prefixes</string>
+    <string name="logs" translatable="false">Logs</string>
+
+    <string name="prefix_state">Prefix state</string>
+    <string name="create_default_prefix">Create prefix</string>
+    <string name="reset_default_prefix">Reset prefix</string>
+    <string name="start_termux_x11">Start Termux:X11</string>
+</resources>

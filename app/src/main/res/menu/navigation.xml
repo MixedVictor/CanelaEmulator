@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_prefixes"
+        android:enabled="true"
+        android:icon="@drawable/home_24px"
+        android:title="@string/prefixes"/>
+    <item
+        android:id="@+id/navigation_logs"
+        android:enabled="true"
+        android:icon="@drawable/monitoring_24px"
+        android:title="@string/logs"/>
+</menu>
