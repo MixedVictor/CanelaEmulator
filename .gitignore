@@ -13,6 +13,3 @@
 .externalNativeBuild
 .cxx
 local.properties
-
-# Prevent from commiting Vulkan-Headers
-/app/src/main/cpp/libs/Vulkan-Headers
