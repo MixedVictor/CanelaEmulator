@@ -10,7 +10,7 @@ import com.google.android.material.materialswitch.MaterialSwitch
 
 
 class MainActivity : AppCompatActivity() {
-    private val manager: ManagerViewModel by viewModels()
+    private val manager: PrefixManagerViewModel by viewModels()
 
     private lateinit var prefixStateSwitch: MaterialSwitch
     private lateinit var createDefaultPrefixButton: Button

@@ -8,7 +8,7 @@ import io.github.mixedvictor.canelaemu.cassia.store.Prefix
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
-class ManagerViewModel : ViewModel() {
+class PrefixManagerViewModel : ViewModel() {
     var prefixIsStarting = false
         private set
     var prefixCanBeReset = false

@@ -28,27 +28,33 @@ class SetupActivity : AppCompatActivity() {
 
     private val PICK_EXTERNALS_REQUEST_CODE = 1
     private val PICK_RUNTIME_REQUEST_CODE = 2
+    private val PICK_PREFIX_REQUEST_CODE = 3
 
     private lateinit var RUNTIME_UUID_FOLDER_NAME: Path
+    private lateinit var PREFIX_UUID_FOLDER_NAME: Path
 
     private var cassiaExtSetUp = false
     private var cassiaRuntimeSetUp = false
+    private var cassiaPrefixSetUp = false
 
     private lateinit var selectExternalsButton: Button
     private lateinit var removeExternalsButton: Button
     private lateinit var selectRuntimeButton: Button
     private lateinit var removeRuntimeButton: Button
+    private lateinit var selectPrefixButton: Button
+    private lateinit var removePrefixButton: Button
     private lateinit var finishSetupButton: Button
 
     private lateinit var externalsStatusText: TextView
     private lateinit var runtimeStatusText: TextView
+    private lateinit var prefixStatusText: TextView
 
     private fun pickGzipFile(requestCode: Int) {
         val intent = Intent(Intent.ACTION_GET_CONTENT).addCategory(Intent.CATEGORY_OPENABLE)
             .setType("application/gzip")
 
         startActivityForResult(
-            Intent.createChooser(intent, getString(R.string.select_externals)), requestCode
+            Intent.createChooser(intent, getString(R.string.select)), requestCode
         )
     }
 
@@ -81,7 +87,7 @@ class SetupActivity : AppCompatActivity() {
     @Deprecated("DEPRECATED")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if ((requestCode == PICK_EXTERNALS_REQUEST_CODE || requestCode == PICK_RUNTIME_REQUEST_CODE) && resultCode == RESULT_OK) {
+        if (resultCode == RESULT_OK) {
             data?.data?.let { uri ->
                 val file = File.createTempFile("tmp", ".tar.gz", cacheDir)
                 file.outputStream().use {
@@ -89,73 +95,101 @@ class SetupActivity : AppCompatActivity() {
                 }
                 Log.i(TAG, "File copied to cache: '${file.path}'")
 
-                if (requestCode == PICK_EXTERNALS_REQUEST_CODE) {
-                    val cassiaExtFilePath =
-                        Paths.get(CassiaApplication.instance.cassiaExtPath.toString(), file.name)
 
-                    selectExternalsButton.setEnabled(false)
+                when (requestCode) {
+                    PICK_EXTERNALS_REQUEST_CODE -> {
+                        val cassiaExtFilePath =
+                            Paths.get(CassiaApplication.instance.cassiaExtPath.toString(), file.name)
 
-                    if (!CassiaApplication.instance.cassiaExtPath.exists())
-                        Files.createDirectories(CassiaApplication.instance.cassiaExtPath)
+                        selectExternalsButton.setEnabled(false)
 
-                    Files.copy(
-                        file.toPath(),
-                        cassiaExtFilePath,
-                        StandardCopyOption.COPY_ATTRIBUTES
-                    )
+                        if (!CassiaApplication.instance.cassiaExtPath.exists())
+                            Files.createDirectories(CassiaApplication.instance.cassiaExtPath)
 
-                    Log.i(
-                        TAG,
-                        "File successfully copied to '${CassiaApplication.instance.cassiaExtPath}', extracting cassiaext it..."
-                    )
-                    setStatusText(requestCode, R.string.file_selection_extracting, Color.GREEN)
+                        Files.copy(
+                            file.toPath(),
+                            cassiaExtFilePath,
+                            StandardCopyOption.COPY_ATTRIBUTES
+                        )
 
-                    extractGzipFile(cassiaExtFilePath.toString(), CassiaApplication.instance.cassiaExtPath)
-                    cassiaExtFilePath.toFile().delete()
+                        Log.i(
+                            TAG,
+                            "File successfully copied to '${CassiaApplication.instance.cassiaExtPath}', extracting it..."
+                        )
+                        setStatusText(requestCode, R.string.file_selection_extracting, Color.GREEN)
 
-                    CassiaApplication.instance.cassiaExtPath.resolve("cassiaext.id")
-                        .writeText(UUID.randomUUID().toString())
+                        extractGzipFile(cassiaExtFilePath.toString(), CassiaApplication.instance.cassiaExtPath)
+                        cassiaExtFilePath.toFile().delete()
 
-                    Files.write(
-                        CassiaApplication.instance.cassiaExtPath.resolve("README.txt"), """
+                        CassiaApplication.instance.cassiaExtPath.resolve("cassiaext.id")
+                            .writeText(UUID.randomUUID().toString())
+
+                        Files.write(
+                            CassiaApplication.instance.cassiaExtPath.resolve("README.txt"), """
                         This directory contains Cassia's external dependencies, do NOT touch this unless you know what you're doing.
                         It is managed by the Cassia app, any modifications will be wiped out when a new APK is installed.
                         """.trimIndent().toByteArray()
-                    )
+                        )
 
-                    Log.i(TAG, "ID successfully created, cassiaext is now ready to be used")
+                        Log.i(TAG, "ID successfully created, cassiaext is now ready to be used")
 
-                    switchSetUpsToInstalled(true, requestCode)
-                    setStatusText(requestCode, R.string.file_selection_ok, Color.GREEN)
-                } else if (requestCode == PICK_RUNTIME_REQUEST_CODE) {
-                    val cassiaRuntimeFilePath =
-                        Paths.get(CassiaApplication.instance.runtimes.path.toString(), file.name)
+                        switchSetUpsToInstalled(true, requestCode)
+                        setStatusText(requestCode, R.string.file_selection_ok, Color.GREEN)
+                    }
+                    PICK_RUNTIME_REQUEST_CODE -> {
+                        val cassiaRuntimeFilePath =
+                            Paths.get(CassiaApplication.instance.runtimes.path.toString(), file.name)
 
-                    selectRuntimeButton.setEnabled(false)
+                        selectRuntimeButton.setEnabled(false)
 
-                    Files.copy(
-                        file.toPath(),
-                        cassiaRuntimeFilePath,
-                        StandardCopyOption.COPY_ATTRIBUTES
-                    )
+                        Files.copy(
+                            file.toPath(),
+                            cassiaRuntimeFilePath,
+                            StandardCopyOption.COPY_ATTRIBUTES
+                        )
 
-                    Log.i(
-                        TAG,
-                        "File successfully copied to '${CassiaApplication.instance.cassiaExtPath}', extracting cassiaext it..."
-                    )
-                    setStatusText(requestCode, R.string.file_selection_extracting, Color.GREEN)
+                        Log.i(
+                            TAG,
+                            "File successfully copied to '${CassiaApplication.instance.runtimes.path}', extracting it..."
+                        )
+                        setStatusText(requestCode, R.string.file_selection_extracting, Color.GREEN)
 
-                    extractGzipFile(cassiaRuntimeFilePath.toString(), CassiaApplication.instance.runtimes.path)
-                    cassiaRuntimeFilePath.toFile().delete()
+                        extractGzipFile(cassiaRuntimeFilePath.toString(), CassiaApplication.instance.runtimes.path)
+                        cassiaRuntimeFilePath.toFile().delete()
 
-                    Files.move(
-                        Paths.get(CassiaApplication.instance.runtimes.path.toString(), "prefix"),
-                        Paths.get(RUNTIME_UUID_FOLDER_NAME.toString()),
-                        StandardCopyOption.ATOMIC_MOVE
-                    )
+                        Files.move(
+                            Paths.get(CassiaApplication.instance.runtimes.path.toString(), "prefix"),
+                            Paths.get(RUNTIME_UUID_FOLDER_NAME.toString()),
+                            StandardCopyOption.ATOMIC_MOVE
+                        )
 
-                    switchSetUpsToInstalled(true, requestCode)
-                    setStatusText(requestCode, R.string.file_selection_ok, Color.GREEN)
+                        switchSetUpsToInstalled(true, requestCode)
+                        setStatusText(requestCode, R.string.file_selection_ok, Color.GREEN)
+                    }
+                    PICK_PREFIX_REQUEST_CODE -> {
+                        val cassiaPrefixFilePath =
+                            Paths.get(CassiaApplication.instance.prefixes.path.toString(), file.name)
+
+                        selectPrefixButton.setEnabled(false)
+
+                        Files.copy(
+                            file.toPath(),
+                            cassiaPrefixFilePath,
+                            StandardCopyOption.COPY_ATTRIBUTES
+                        )
+
+                        Log.i(
+                            TAG,
+                            "File successfully copied to '${CassiaApplication.instance.prefixes.path}', extracting it..."
+                        )
+                        setStatusText(requestCode, R.string.file_selection_extracting, Color.GREEN)
+
+                        extractGzipFile(cassiaPrefixFilePath.toString(), CassiaApplication.instance.prefixes.path)
+                        cassiaPrefixFilePath.toFile().delete()
+
+                        switchSetUpsToInstalled(true, requestCode)
+                        setStatusText(requestCode, R.string.file_selection_ok, Color.GREEN)
+                    }
                 }
             }
         }
@@ -163,29 +197,45 @@ class SetupActivity : AppCompatActivity() {
 
     private fun switchSetUpsToInstalled(installed: Boolean, requestCode: Int) {
         if (installed) {
-            if (requestCode == PICK_EXTERNALS_REQUEST_CODE) {
-                removeExternalsButton.setEnabled(true)
-                selectExternalsButton.setEnabled(false)
-                finishSetupButton.setEnabled(true)
-                cassiaExtSetUp = true
-            } else if (requestCode == PICK_RUNTIME_REQUEST_CODE) {
-                removeRuntimeButton.setEnabled(true)
-                selectRuntimeButton.setEnabled(false)
-                cassiaRuntimeSetUp = true
-                setStatusText(PICK_RUNTIME_REQUEST_CODE, R.string.file_already_installed, Color.GRAY)
+            when (requestCode) {
+                PICK_EXTERNALS_REQUEST_CODE -> {
+                    removeExternalsButton.setEnabled(true)
+                    selectExternalsButton.setEnabled(false)
+                    finishSetupButton.setEnabled(true)
+                    cassiaExtSetUp = true
+                }
+                PICK_RUNTIME_REQUEST_CODE -> {
+                    removeRuntimeButton.setEnabled(true)
+                    selectRuntimeButton.setEnabled(false)
+                    cassiaRuntimeSetUp = true
+                }
+                PICK_PREFIX_REQUEST_CODE -> {
+                    removePrefixButton.setEnabled(false)
+                    selectPrefixButton.setEnabled(true)
+                    cassiaPrefixSetUp = true
+                }
             }
         } else {
-            if (requestCode == PICK_EXTERNALS_REQUEST_CODE) {
-                finishSetupButton.setEnabled(false)
-                removeExternalsButton.setEnabled(false)
-                selectExternalsButton.setEnabled(true)
-                cassiaExtSetUp = false
-                setStatusText(PICK_EXTERNALS_REQUEST_CODE, R.string.file_selection, Color.BLACK)
-            } else if (requestCode == PICK_RUNTIME_REQUEST_CODE) {
-                removeRuntimeButton.setEnabled(false)
-                selectRuntimeButton.setEnabled(true)
-                cassiaRuntimeSetUp = false
-                setStatusText(PICK_RUNTIME_REQUEST_CODE, R.string.file_selection, Color.BLACK)
+            when (requestCode) {
+                PICK_EXTERNALS_REQUEST_CODE -> {
+                    finishSetupButton.setEnabled(false)
+                    removeExternalsButton.setEnabled(false)
+                    selectExternalsButton.setEnabled(true)
+                    cassiaExtSetUp = false
+                    setStatusText(requestCode, R.string.file_selection, Color.BLACK)
+                }
+                PICK_RUNTIME_REQUEST_CODE -> {
+                    removeRuntimeButton.setEnabled(false)
+                    selectRuntimeButton.setEnabled(true)
+                    cassiaRuntimeSetUp = false
+                    setStatusText(requestCode, R.string.file_selection, Color.BLACK)
+                }
+                PICK_PREFIX_REQUEST_CODE -> {
+                    removePrefixButton.setEnabled(false)
+                    selectPrefixButton.setEnabled(true)
+                    cassiaPrefixSetUp = false
+                    setStatusText(requestCode, R.string.file_selection, Color.BLACK)
+                }
             }
         }
     }
@@ -196,15 +246,19 @@ class SetupActivity : AppCompatActivity() {
         setContentView(R.layout.activity_setup)
 
         RUNTIME_UUID_FOLDER_NAME = Paths.get(CassiaApplication.instance.runtimes.path.toString(), "00000000-0000-0000-0000-000000000000v1")
+        PREFIX_UUID_FOLDER_NAME = Paths.get(CassiaApplication.instance.prefixes.path.toString(), "11cadfcf-03c9-4482-a5b9-e1c7f2a8fb9b")
 
         selectExternalsButton = findViewById(R.id.select_externals_button)
         removeExternalsButton = findViewById(R.id.remove_externals_button)
         selectRuntimeButton = findViewById(R.id.select_runtime_button)
         removeRuntimeButton = findViewById(R.id.remove_runtime_button)
+        selectPrefixButton = findViewById(R.id.select_prefix_button)
+        removePrefixButton = findViewById(R.id.remove_prefix_button)
         finishSetupButton = findViewById(R.id.finish_setup_button)
 
         externalsStatusText = findViewById(R.id.externals_status_text)
         runtimeStatusText = findViewById(R.id.runtime_status_text)
+        prefixStatusText = findViewById(R.id.prefix_status_text)
 
         selectExternalsButton.setOnClickListener {
             pickGzipFile(PICK_EXTERNALS_REQUEST_CODE)
@@ -214,6 +268,10 @@ class SetupActivity : AppCompatActivity() {
             pickGzipFile(PICK_RUNTIME_REQUEST_CODE)
         }
 
+        selectPrefixButton.setOnClickListener {
+            pickGzipFile(PICK_PREFIX_REQUEST_CODE)
+        }
+
         removeExternalsButton.setOnClickListener {
             Paths.get(filesDir.absolutePath, "cassiaext").deleteRecursively()
             switchSetUpsToInstalled(false, PICK_EXTERNALS_REQUEST_CODE)
@@ -221,7 +279,12 @@ class SetupActivity : AppCompatActivity() {
 
         removeRuntimeButton.setOnClickListener {
             RUNTIME_UUID_FOLDER_NAME.deleteRecursively()
-            switchSetUpsToInstalled(false, PICK_EXTERNALS_REQUEST_CODE)
+            switchSetUpsToInstalled(false, PICK_RUNTIME_REQUEST_CODE)
+        }
+
+        removePrefixButton.setOnClickListener {
+            PREFIX_UUID_FOLDER_NAME.deleteRecursively()
+            switchSetUpsToInstalled(false, PICK_PREFIX_REQUEST_CODE)
         }
 
         if (CassiaApplication.instance.cassiaExtPath.exists())
@@ -229,6 +292,9 @@ class SetupActivity : AppCompatActivity() {
 
         if (RUNTIME_UUID_FOLDER_NAME.exists())
             cassiaRuntimeSetUp = true
+
+        if (PREFIX_UUID_FOLDER_NAME.exists())
+            cassiaPrefixSetUp = true
 
         if (cassiaExtSetUp) {
             switchSetUpsToInstalled(true, PICK_EXTERNALS_REQUEST_CODE)
@@ -240,18 +306,30 @@ class SetupActivity : AppCompatActivity() {
             setStatusText(PICK_RUNTIME_REQUEST_CODE, R.string.file_already_installed, Color.GRAY)
         }
 
+        if (cassiaPrefixSetUp) {
+            switchSetUpsToInstalled(true, PICK_PREFIX_REQUEST_CODE)
+            setStatusText(PICK_PREFIX_REQUEST_CODE, R.string.file_already_installed, Color.GRAY)
+        }
+
         finishSetupButton.setOnClickListener {
             finish()
         }
     }
 
     private fun setStatusText(requestCode: Int, string: Int, color: Int) {
-        if (requestCode == PICK_EXTERNALS_REQUEST_CODE) {
-            externalsStatusText.setText(string)
-            externalsStatusText.setTextColor(color)
-        } else if (requestCode == PICK_RUNTIME_REQUEST_CODE) {
-            runtimeStatusText.setText(string)
-            runtimeStatusText.setTextColor(color)
+        when (requestCode) {
+            PICK_EXTERNALS_REQUEST_CODE -> {
+                externalsStatusText.setText(string)
+                externalsStatusText.setTextColor(color)
+            }
+            PICK_RUNTIME_REQUEST_CODE -> {
+                runtimeStatusText.setText(string)
+                runtimeStatusText.setTextColor(color)
+            }
+            PICK_PREFIX_REQUEST_CODE -> {
+                prefixStatusText.setText(string)
+                prefixStatusText.setTextColor(color)
+            }
         }
     }
 }
