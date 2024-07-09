@@ -40,7 +40,7 @@
                 style="@style/Widget.Material3.Button.TextButton"
                 android:layout_width="144dp"
                 android:layout_height="wrap_content"
-                android:enabled="false"
+                android:enabled="true"
                 android:text="@string/reset_default_prefix" />
 
             <Space
@@ -52,7 +52,7 @@
                 android:id="@+id/create_default_prefix_button"
                 style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="144dp"
-                android:enabled="false"
+                android:enabled="true"
                 android:layout_height="wrap_content"
                 android:text="@string/create_default_prefix" />
 

@@ -23,9 +23,9 @@ namespace cassia {
                       "HOME=" + (prefixPath / "home").string(),
                       "LD_LIBRARY_PATH=" + (runtimePath / "lib").string() + ":" +
                       (cassiaExtPath / "lib").string(),
-                      "PATH=" + (runtimePath / "bin").string(),
+                      "PATH=" + (runtimePath / "bin").string() + ":",
                       "WINELOADER=" + (runtimePath / "bin/wine").string(),
-                      "DISPLAY=/data/data/cassia.app/cache/tmp/.X11-unix/X0",
+                      "DISPLAY=/data/data/io.github.mixedvictor.canelaemu/cache/tmp/.X11-unix/X0",
 //                  "ALSA_CONFIG_PATH=" + (prefixPath / "home/.asoundrc").string(),
                       "ALSA_CONFIG_DIR=" + (runtimePath / "share/alsa/").string(),
                       "ALSA_PLUGIN_DIR=" + (runtimePath / "lib/alsa-lib/").string(),
@@ -40,7 +40,7 @@ namespace cassia {
               },
               serverProcess{runtimePath / "bin/wineserver", {"--foreground", "--persistent"},
                             envVars, Logger::GetPipe("wineserver")} {
-        Launch("wineboot.exe", {"--init"}, {}, Logger::GetPipe("wineboot")).WaitForExit();
+        Launch("wineboot.exe", {"--update"}, {}, Logger::GetPipe("wineboot")).WaitForExit();
         Launch("explorer.exe", {"/desktop=shell,1280x720", "winecfg"}, {},
                Logger::GetPipe("explorer")).Detach();
     }

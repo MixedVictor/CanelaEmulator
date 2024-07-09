@@ -210,8 +210,8 @@ class SetupActivity : AppCompatActivity() {
                     cassiaRuntimeSetUp = true
                 }
                 PICK_PREFIX_REQUEST_CODE -> {
-                    removePrefixButton.setEnabled(false)
-                    selectPrefixButton.setEnabled(true)
+                    removePrefixButton.setEnabled(true)
+                    selectPrefixButton.setEnabled(false)
                     cassiaPrefixSetUp = true
                 }
             }
@@ -222,19 +222,19 @@ class SetupActivity : AppCompatActivity() {
                     removeExternalsButton.setEnabled(false)
                     selectExternalsButton.setEnabled(true)
                     cassiaExtSetUp = false
-                    setStatusText(requestCode, R.string.file_selection, Color.BLACK)
+                    setStatusText(requestCode, R.string.file_selection, Color.LTGRAY)
                 }
                 PICK_RUNTIME_REQUEST_CODE -> {
                     removeRuntimeButton.setEnabled(false)
                     selectRuntimeButton.setEnabled(true)
                     cassiaRuntimeSetUp = false
-                    setStatusText(requestCode, R.string.file_selection, Color.BLACK)
+                    setStatusText(requestCode, R.string.file_selection, Color.LTGRAY)
                 }
                 PICK_PREFIX_REQUEST_CODE -> {
                     removePrefixButton.setEnabled(false)
                     selectPrefixButton.setEnabled(true)
                     cassiaPrefixSetUp = false
-                    setStatusText(requestCode, R.string.file_selection, Color.BLACK)
+                    setStatusText(requestCode, R.string.file_selection, Color.LTGRAY)
                 }
             }
         }
@@ -246,7 +246,7 @@ class SetupActivity : AppCompatActivity() {
         setContentView(R.layout.activity_setup)
 
         RUNTIME_UUID_FOLDER_NAME = Paths.get(CassiaApplication.instance.runtimes.path.toString(), "00000000-0000-0000-0000-000000000000v1")
-        PREFIX_UUID_FOLDER_NAME = Paths.get(CassiaApplication.instance.prefixes.path.toString(), "11cadfcf-03c9-4482-a5b9-e1c7f2a8fb9b")
+        PREFIX_UUID_FOLDER_NAME = Paths.get(CassiaApplication.instance.prefixes.path.toString(), "1751cf7e-e06c-476e-a134-b9bdd4597114")
 
         selectExternalsButton = findViewById(R.id.select_externals_button)
         removeExternalsButton = findViewById(R.id.remove_externals_button)

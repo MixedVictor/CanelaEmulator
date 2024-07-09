@@ -97,7 +97,7 @@ class InputHandler {
     }
 
     private fun keyEvent(scanCode: Int, down: Boolean) {
-        Log.d("cassia.app", "Key $scanCode = $down")
+        Log.d("io.github.mixedvictor.canelaemu", "Key $scanCode = $down")
     }
 
     fun onKeyEvent(event: KeyEvent): Boolean {

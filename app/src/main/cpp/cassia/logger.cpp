@@ -11,7 +11,7 @@
 namespace cassia {
 Logger Logger::instance;
 
-constexpr std::string_view BaseLogTag{"cassia.app."};
+constexpr std::string_view BaseLogTag{"io.github.mixedvictor.canelaemu."};
 /**
  * @brief The maximum length of a single logcat message, anything past this will be truncated.
  * @url https://cs.android.com/android/platform/superproject/main/+/main:system/logging/liblog/include/log/log.h;l=71;drc=d3eebf83c7dc240c02dd7e7d846e8a07aaf92d18
